@@ -1,0 +1,3 @@
+[default.extend-words]
+# The OpenType width axis tag, as in font-variation-settings: 'wdth' 75.
+wdth = "wdth"

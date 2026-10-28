@@ -1,19 +1,47 @@
 {
-  "name": "brand",
-  "module": "index.ts",
+  "name": "@studiocygnus/brand",
+  "version": "0.0.0",
+  "description": "The Studio Cygnus brand: Tailwind v4 theme, CSS variables, logos and fonts",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studiocygnus/brand.git"
+  },
   "type": "module",
-  "private": true,
-  "scripts": {
-    "typecheck": "bun check"
+  "files": [
+    "dist",
+    "logos"
+  ],
+  "exports": {
+    "./theme.css": "./dist/theme.css",
+    "./variables.css": "./dist/variables.css",
+    "./fonts.css": "./dist/fonts.css",
+    "./logos/*": "./logos/*",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/martian-mono": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/bun": "latest",
     "oxlint": "^1.90.0",
     "oxlint-tsgolint": "^7.0.2005",
     "prettier": "^3.9.10",
-    "typescript": "^7"
-  },
-  "peerDependencies": {
+    "tailwindcss": "^4.3.3",
     "typescript": "^7"
   }
 }
