@@ -1,33 +1,16 @@
 import { expect, test } from "bun:test";
-import { readFile } from "node:fs/promises";
-import { compile } from "tailwindcss";
 import { renderFonts, renderTheme, renderVariables } from "./css.ts";
+import { compileCss } from "./tailwind.ts";
 import { palette } from "./tokens.ts";
 
 // Compile the theme the way a site would import it, with the stylesheets rendered in memory.
-const tailwind = async (candidates: string[]): Promise<string> => {
-  const sheets: Record<string, () => Promise<string>> = {
-    tailwindcss: () =>
-      readFile(
-        Bun.resolveSync("tailwindcss/index.css", import.meta.dir),
-        "utf8",
-      ),
-    "./theme.css": () => Promise.resolve(renderTheme()),
-    "./variables.css": () => Promise.resolve(renderVariables()),
-  };
-  const compiler = await compile(
+const tailwind = (candidates: string[]): Promise<string> =>
+  compileCss(
     '@import "tailwindcss";\n@import "./theme.css";',
-    {
-      base: import.meta.dir,
-      loadStylesheet: async (id, base) => {
-        const load = sheets[id];
-        if (!load) throw new Error(`unexpected import ${id}`);
-        return { path: id, base, content: await load() };
-      },
-    },
+    import.meta.dir,
+    candidates,
+    { "./theme.css": renderTheme(), "./variables.css": renderVariables() },
   );
-  return compiler.build(candidates);
-};
 
 test("every colour becomes a Tailwind utility that reads the --sc variable", async () => {
   const css = await tailwind([
