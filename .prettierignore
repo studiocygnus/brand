@@ -1,0 +1,14 @@
+# Written by tools, not people. pnpm and bun write package.json without a final newline.
+CHANGELOG.md
+.release-please-manifest.json
+package.json
+package-lock.json
+pnpm-lock.yaml
+bun.lock
+# sadr writes these in one style for every project and rewrites them on each run.
+sadr.eslint.mjs
+sadr.oxlintrc.json
+
+# Markdown is prose, left as its authors wrote it: Prettier re-aligns tables and lists, and
+# create-astro's own README fails it under pnpm and bun.
+*.md
