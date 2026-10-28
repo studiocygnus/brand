@@ -40,3 +40,6 @@ dist/
 .env.*
 !.env.example
 *.db
+
+# Built by `just build` and shipped in the package
+/specimen.html

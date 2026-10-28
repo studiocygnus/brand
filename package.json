@@ -10,13 +10,15 @@
   "type": "module",
   "files": [
     "dist",
-    "logos"
+    "logos",
+    "specimen.html"
   ],
   "exports": {
     "./theme.css": "./dist/theme.css",
     "./variables.css": "./dist/variables.css",
     "./fonts.css": "./dist/fonts.css",
     "./logos/*": "./logos/*",
+    "./specimen.html": "./specimen.html",
     "./package.json": "./package.json"
   },
   "publishConfig": {

@@ -71,6 +71,13 @@ files are linked relative to those packages, so the site's bundler has to copy t
 (`-on-night.svg`) and a paper ground (`-on-paper.svg`). The letters are outlines, so the files need
 no fonts. Put them only on night or paper, never on a marigold or steel fill.
 
+## Specimen
+
+`@studiocygnus/brand/specimen.html` is one page showing the brand as this version ships it: the
+palette, both themes, the type roles, the logos and the dot grid. The CSS and the fonts are inlined,
+so it opens straight from disk with no network. `just build` writes it to the repo root from
+`specimen/`, compiled against `dist/theme.css`.
+
 ## Working on it
 
 The values live in `src/tokens.ts`; `just build` writes the stylesheets to `dist/`. The tests check

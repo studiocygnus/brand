@@ -1,0 +1,215 @@
+<!doctype html>
+<!-- The source of specimen.html. `just build` fills the sc: slots from src/tokens.ts and logos/,
+     compiles style.css against dist/theme.css for the classes used here, and inlines the CSS and
+     the fonts. -->
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Studio Cygnus brand specimen</title>
+    <!-- sc:style -->
+  </head>
+  <body class="bg-ground font-sans text-fg antialiased">
+    <div class="mx-auto flex max-w-5xl flex-col gap-20 px-4 py-10 sm:px-8">
+      <header class="flex flex-wrap items-end justify-between gap-6">
+        <div class="flex flex-col gap-1">
+          <span class="type-label text-xs text-fg-muted">Studio</span>
+          <span class="type-wordmark text-5xl">cygnus</span>
+        </div>
+        <div class="flex flex-col items-end gap-3">
+          <span class="type-label text-xs text-fg-muted"
+            >@studiocygnus/brand
+            <!-- sc:version --></span
+          >
+          <div class="flex border border-rule" role="group" aria-label="Theme">
+            <button
+              class="type-label min-h-11 px-4 text-xs text-fg hover:bg-surface"
+              data-set-theme="dark"
+            >
+              Dark
+            </button>
+            <button
+              class="type-label min-h-11 border-x border-rule px-4 text-xs text-fg hover:bg-surface"
+              data-set-theme="light"
+            >
+              Light
+            </button>
+            <button
+              class="type-label min-h-11 px-4 text-xs text-fg hover:bg-surface"
+              data-set-theme="system"
+            >
+              System
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section class="flex flex-col gap-6">
+        <p class="type-label text-xs text-accent-fg">Brand specimen</p>
+        <h1 class="type-heading text-6xl sm:text-8xl">
+          Small tools, one night sky.
+        </h1>
+        <p class="max-w-prose text-lg text-fg-muted">
+          Everything on this page is drawn with the theme this package ships:
+          the colours, the three fonts, the type roles, the dot grid and the
+          logo files.
+        </p>
+      </section>
+
+      <section class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Palette</h2>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
+          <!-- sc:palette -->
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Two themes</h2>
+        <p class="max-w-prose text-fg-muted">
+          The same markup twice. The left card sets
+          <code class="font-mono text-sm">data-theme="dark"</code>, the right
+          one <code class="font-mono text-sm">data-theme="light"</code>.
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div
+            data-theme="dark"
+            class="bg-dot-grid flex flex-col gap-8 border border-rule bg-ground p-8 text-fg"
+          >
+            <div class="flex flex-col gap-4">
+              <span class="type-label text-xs text-accent-fg"
+                >Studio Cygnus · B2B tools</span
+              >
+              <span class="type-heading text-4xl"
+                >Small tools that do one job well.</span
+              >
+              <span class="text-fg-muted"
+                >One trade at a time, built to keep running.</span
+              >
+            </div>
+            <div class="flex flex-wrap items-center gap-5">
+              <a
+                class="inline-flex min-h-11 items-center bg-accent px-5 font-semibold text-on-accent"
+                href="#type"
+                >See the type</a
+              >
+              <a class="text-link underline underline-offset-4" href="#logos"
+                >See the logos</a
+              >
+            </div>
+          </div>
+          <div
+            data-theme="light"
+            class="bg-dot-grid flex flex-col gap-8 border border-rule bg-ground p-8 text-fg"
+          >
+            <div class="flex flex-col gap-4">
+              <span class="type-label text-xs text-accent-fg"
+                >Studio Cygnus · B2B tools</span
+              >
+              <span class="type-heading text-4xl"
+                >Small tools that do one job well.</span
+              >
+              <span class="text-fg-muted"
+                >One trade at a time, built to keep running.</span
+              >
+            </div>
+            <div class="flex flex-wrap items-center gap-5">
+              <a
+                class="inline-flex min-h-11 items-center bg-accent px-5 font-semibold text-on-accent"
+                href="#type"
+                >See the type</a
+              >
+              <a class="text-link underline underline-offset-4" href="#logos"
+                >See the logos</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="type" class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Type</h2>
+        <div class="flex flex-col gap-3 border-t border-rule pt-6">
+          <span class="type-label text-xs text-fg-muted"
+            >type-heading · Bricolage Grotesque</span
+          >
+          <p class="type-heading text-5xl sm:text-7xl">
+            Comenzi, prăjire, livrare.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 border-t border-rule pt-6">
+          <span class="type-label text-xs text-fg-muted"
+            >type-wordmark · Bricolage Grotesque</span
+          >
+          <p class="type-wordmark text-4xl sm:text-6xl">
+            Pedidos fijos, sin WhatsApp.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 border-t border-rule pt-6">
+          <span class="type-label text-xs text-fg-muted"
+            >font-sans · Schibsted Grotesk</span
+          >
+          <p class="max-w-prose text-xl leading-relaxed">
+            Each café keeps its standing order. The roast list, packing list and
+            draft invoice follow from it, and a skipped week is
+            <em>one tap</em>.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 border-t border-rule pt-6">
+          <span class="type-label text-xs text-fg-muted"
+            >type-label · Martian Mono</span
+          >
+          <p class="type-label text-sm text-accent-fg">
+            Lot 0427 · 12.5 kg green · ș ț ñ ¿ ¡
+          </p>
+        </div>
+      </section>
+
+      <section id="logos" class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Logos</h2>
+        <p class="max-w-prose text-fg-muted">
+          The files in <code class="font-mono text-sm">logos/</code>, each on
+          the ground it is made for. Never on a marigold or steel fill.
+        </p>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <!-- sc:logos -->
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Dot grid</h2>
+        <div
+          class="bg-dot-grid flex h-48 items-end border border-rule bg-surface p-4"
+        >
+          <span class="type-label text-xs text-fg-muted">bg-dot-grid</span>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Use it</h2>
+        <pre
+          class="overflow-x-auto border border-rule bg-surface p-5 font-mono text-sm leading-relaxed"
+        ><code>@import "tailwindcss";
+@import "@studiocygnus/brand/fonts.css";
+@import "@studiocygnus/brand/theme.css";</code></pre>
+      </section>
+
+      <footer
+        class="flex flex-wrap justify-between gap-4 border-t border-rule pt-6"
+      >
+        <span class="type-label text-xs text-fg-muted"
+          >Studio Cygnus S.R.L.</span
+        >
+        <span class="type-label text-xs text-fg-muted"
+          >Code MIT · name and logos reserved</span
+        >
+      </footer>
+    </div>
+    <script>
+      for (const button of document.querySelectorAll("[data-set-theme]")) {
+        button.addEventListener("click", () => {
+          document.documentElement.dataset.theme = button.dataset.setTheme;
+        });
+      }
+    </script>
+  </body>
+</html>
