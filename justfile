@@ -15,3 +15,12 @@ default:
 # One-time setup: commit guard
 setup:
     git config core.hooksPath .githooks
+
+# Write the stylesheets to dist/, then list what npm would publish
+build:
+    bun scripts/build.ts
+    npm pack --dry-run
+
+# Redraw the logo SVGs from the fonts in node_modules
+logos:
+    uv run --quiet scripts/logos.py

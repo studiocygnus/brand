@@ -3,7 +3,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "package-name": "brand",
+      "package-name": "@studiocygnus/brand",
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "include-component-in-tag": false
