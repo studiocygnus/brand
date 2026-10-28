@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/studiocygnus/brand/compare/v1.0.0...v1.1.0) (2026-10-28)
+
+
+### Features
+
+* add a self-contained brand specimen page to the package ([#5](https://github.com/studiocygnus/brand/issues/5)) ([a532704](https://github.com/studiocygnus/brand/commit/a532704db38a7abb49cfed29d5885b29e5566a03))
+
 ## 1.0.0 (2026-10-28)
 
 
