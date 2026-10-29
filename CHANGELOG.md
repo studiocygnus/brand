@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/studiocygnus/brand/compare/v2.2.0...v2.3.0) (2026-10-29)
+
+
+### Features
+
+* publish the studio's public facts as company.json ([#13](https://github.com/studiocygnus/brand/issues/13)) ([26bb926](https://github.com/studiocygnus/brand/commit/26bb9263de30f6c103c278d84adf92742b0baaad))
+
 ## [2.2.0](https://github.com/studiocygnus/brand/compare/v2.1.0...v2.2.0) (2026-10-29)
 
 
