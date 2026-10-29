@@ -41,5 +41,5 @@ dist/
 !.env.example
 *.db
 
-# Built by `just build` and shipped in the package
-/specimen.html
+# The brand kit site, built by `just build`
+/_site

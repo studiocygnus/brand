@@ -1,3 +1,0 @@
-/* The specimen's stylesheet: Tailwind with the theme as built in dist/, the file the package ships. */
-@import "tailwindcss";
-@import "../dist/theme.css";

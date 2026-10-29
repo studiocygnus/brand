@@ -2,13 +2,17 @@
 # requires-python = ">=3.12"
 # dependencies = ["fonttools[woff]==4.68.0", "uharfbuzz==0.57.0"]
 # ///
-"""Draw the logo SVGs in logos/, with the text as outlines so they need no fonts.
+"""Draw the logo SVGs in logos/ and the social images in social/, with the text as outlines so
+they need no fonts.
 
 `just logos` runs it. It reproduces the final identity board's layout: the mark's geometry, and
-the wordmark and lockup as the browser set them, using the fonts from node_modules.
+the wordmark and lockup as the browser set them, using the fonts from node_modules. The social
+images follow the social board on the identity canvas, at the sizes in src/social.json.
 """
 
 import io
+import json
+import random
 from pathlib import Path
 
 import uharfbuzz as hb
@@ -21,6 +25,7 @@ from fontTools.varLib.instancer import instantiateVariableFont
 ROOT = Path(__file__).resolve().parent.parent
 FONTS = ROOT / "node_modules/@fontsource-variable"
 OUT = ROOT / "logos"
+SOCIAL = ROOT / "social"
 
 NIGHT = "#0B0E1A"
 STARLIGHT = "#E9ECF5"
@@ -40,10 +45,13 @@ GROUNDS = {
 MARK_WEIGHTS = {
     "medium": ((6, 5, 4, 4.4), 1.6, 0.55, ((53, 90, 4.4), (61.5, 87.5, 3))),
     "small": ((7, 6, 5, 5.4), 2.0, 0.55, ((53, 90, 5.2), (63, 87, 3.6))),
+    "avatar": ((9, 8, 7, 7.4), 3.5, 0.6, ((53, 90, 7.5), (66, 86, 5))),
 }
 LINES = [(46, 10, 50, 38), (50, 38, 56, 90), (16, 30, 50, 38), (50, 38, 84, 50)]
 STARS = [(46, 10), (50, 38), (16, 30), (84, 50)]
 PAD = 2
+# The social images are drawn for screens at twice CSS pixels: star sizes and counts follow it.
+DENSITY = 2
 
 
 def num(v):
@@ -113,6 +121,50 @@ def mark(size, star, companion, weight):
     return out
 
 
+def wordmark(face, size):
+    """`cygnus` and the two-star full stop at `size` px, baseline at y=0.
+
+    As the board set it at 76px: a 4px gap, then a 28x17 box holding the 26x16 stop, its bottom
+    9px above the bottom of the line box (line-height 1). The gap and the stop scale with `size`.
+    Returns the letters' path, the stop's two circles (cx, cy, r) and the ink bounds.
+    """
+    u = size / 76
+    letters, advance, (x0, y0, x1, y1) = face.outline("cygnus", size, -0.045)
+    k = min(28 / 26, 17 / 16) * u
+    box_left = advance + 4 * u
+    box_top = (size - face.baseline(size, 1)) - 9 * u - 17 * u
+    ox, oy = box_left + (28 * u - 26 * k) / 2, box_top + (17 * u - 16 * k) / 2
+    stop = [(ox + 7 * k, oy + 9 * k, 6.5 * k), (ox + 20.5 * k, oy + 6 * k, 4.5 * k)]
+    top = min(y0, *(cy - r for _, cy, r in stop))
+    bottom = max(y1, *(cy + r for _, cy, r in stop))
+    right = max(x1, *(cx + r for cx, _, r in stop))
+    return letters, stop, (x0, top, right, bottom)
+
+
+def wordmark_body(letters, stop, ink, companion):
+    (bright, dim) = stop
+    return [
+        f'<path fill="{ink}" d="{letters}"/>',
+        f'<circle cx="{num(bright[0])}" cy="{num(bright[1])}" r="{num(bright[2])}" fill="{MARIGOLD}"/>',
+        f'<circle cx="{num(dim[0])}" cy="{num(dim[1])}" r="{num(dim[2])}" fill="{companion}"/>',
+    ]
+
+
+def starfield(rng, width, height, clear):
+    """Stars over the whole image, so any crop of it is still sky, but none inside the `clear`
+    boxes (x0, y0, x1, y1)."""
+    count = max(70, round(220 * width * height / DENSITY**2 / (1280 * 720)))
+    out = []
+    for _ in range(count):
+        x, y, r, t = rng.random() * width, rng.random() * height, rng.random(), rng.random()
+        if any(x0 <= x <= x1 and y0 <= y <= y1 for x0, y0, x1, y1 in clear):
+            continue
+        fill = STEEL if t < 0.12 else STARLIGHT
+        radius = (1 + r * 1.8) * DENSITY / 2
+        out.append(f'<circle cx="{num(x)}" cy="{num(y)}" r="{num(radius)}" fill="{fill}" opacity="{num(0.25 + r * 0.6)}"/>')
+    return out
+
+
 def write(name, width, height, shift, body):
     """One SVG, `body` moved by `shift` and padded by PAD on every side."""
     lines = "\n".join(f"    {line}" for line in body)
@@ -132,25 +184,10 @@ def main():
     )
     mono = Face(FONTS / "martian-mono/files/martian-mono-latin-standard-normal.woff2", {"wght": 400, "wdth": 100})
 
-    # Wordmark: `cygnus` at 76px with line-height 1, a 4px gap, then the two-star full stop: a
-    # 28x17 box holding a 26x16 drawing, its bottom 9px above the bottom of the line box.
-    size = 76
-    letters, advance, (x0, y0, x1, y1) = bricolage.outline("cygnus", size, -0.045)
-    k = min(28 / 26, 17 / 16)
-    box_left = advance + 4
-    box_top = (size - bricolage.baseline(size, 1)) - 9 - 17
-    ox, oy = box_left + (28 - 26 * k) / 2, box_top + (17 - 16 * k) / 2
-    stop = [(ox + 7 * k, oy + 9 * k, 6.5 * k), (ox + 20.5 * k, oy + 6 * k, 4.5 * k)]
-    top = min(y0, *(cy - r for _, cy, r in stop))
-    bottom = max(y1, *(cy + r for _, cy, r in stop))
-    right = max(x1, *(cx + r for cx, _, r in stop))
+    # Wordmark: `cygnus` at 76px with the two-star full stop.
+    letters, stop, (x0, top, right, bottom) = wordmark(bricolage, 76)
     for ground, (ink, companion, _) in GROUNDS.items():
-        (bright, dim) = stop
-        write(f"wordmark-on-{ground}.svg", right - x0, bottom - top, (-x0, -top), [
-            f'<path fill="{ink}" d="{letters}"/>',
-            f'<circle cx="{num(bright[0])}" cy="{num(bright[1])}" r="{num(bright[2])}" fill="{MARIGOLD}"/>',
-            f'<circle cx="{num(dim[0])}" cy="{num(dim[1])}" r="{num(dim[2])}" fill="{companion}"/>',
-        ])
+        write(f"wordmark-on-{ground}.svg", right - x0, bottom - top, (-x0, -top), wordmark_body(letters, stop, ink, companion))
 
     # Mark: the 100-unit drawing at the weight of the board's mark on night and on paper.
     for ground, (star, companion, _) in GROUNDS.items():
@@ -173,6 +210,65 @@ def main():
             *mark(88, star, companion, "small"),
             f'<path fill="{label}" transform="translate({num(text_x)} {num(studio_y)})" d="{studio}"/>',
             f'<path fill="{star}" transform="translate({num(text_x)} {num(name_y)})" d="{name}"/>',
+        ])
+
+    social(bricolage)
+
+
+def write_social(name, width, height, body):
+    """One social image, `width` by `height` px with nothing outside it."""
+    lines = "\n".join(f"  {line}" for line in body)
+    (SOCIAL / name).write_text(
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Studio Cygnus">\n'
+        f"  <title>Studio Cygnus</title>\n{lines}\n</svg>\n"
+    )
+
+
+def social(bricolage):
+    """The avatar and the banners, all on night."""
+    spec = json.loads((ROOT / "src/social.json").read_text())
+    SOCIAL.mkdir(exist_ok=True)
+    star, companion, _ = GROUNDS["night"]
+
+    # Avatar: the mark at its avatar weight, 72% of the square, the point (50, 49) of its drawing
+    # on the centre so it sits in the middle of the circle every platform crops it to.
+    w, h = spec["avatar"]["width"], spec["avatar"]["height"]
+    size = 0.72 * w
+    write_social("avatar.svg", w, h, [
+        f'<rect width="{w}" height="{h}" fill="{NIGHT}"/>',
+        f'<g transform="translate({num(w / 2 - 0.5 * size)} {num(h / 2 - 0.49 * size)})">',
+        *(f"  {line}" for line in mark(size, star, companion, "avatar")),
+        "</g>",
+    ])
+
+    # Banners: the wordmark and the Northern Cross side by side, centred in the platform's safe
+    # area and sized from it, over a star field that keeps clear of them.
+    for banner in spec["banners"]:
+        w, h = banner["width"], banner["height"]
+        sx, sy, sw, sh = banner["safe"]
+        word = min(0.42 * sh, 0.15 * sw)
+        cross = min(0.92 * sh, 0.32 * sw)
+        gap = min(0.5 * sh, 0.07 * sw)
+        letters, stop, (x0, top, right, bottom) = wordmark(bricolage, word)
+        width = right - x0 + gap + cross
+        left, mid = sx + (sw - width) / 2, sy + sh / 2
+        wx, wy = left - x0, mid - (top + bottom) / 2
+        cx, cy = left + right - x0 + gap, mid - cross / 2
+        # Keep stars off the wordmark and the cross, each with a margin, but not the gap between.
+        m = 0.12 * word
+        clear = [
+            (left - m, mid - (bottom - top) / 2 - m, left + right - x0 + m, mid + (bottom - top) / 2 + m),
+            (cx - m, cy - m, cx + cross + m, cy + cross + m),
+        ]
+        write_social(f"banner-{banner['name']}.svg", w, h, [
+            f'<rect width="{w}" height="{h}" fill="{NIGHT}"/>',
+            *starfield(random.Random(banner["name"]), w, h, clear),
+            f'<g transform="translate({num(wx)} {num(wy)})">',
+            *(f"  {line}" for line in wordmark_body(letters, stop, star, companion)),
+            "</g>",
+            f'<g transform="translate({num(cx)} {num(cy)})">',
+            *(f"  {line}" for line in mark(cross, star, companion, "medium")),
+            "</g>",
         ])
 
 

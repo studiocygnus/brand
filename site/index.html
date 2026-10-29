@@ -1,12 +1,12 @@
 <!doctype html>
-<!-- The source of specimen.html. `just build` fills the sc: slots from src/tokens.ts and logos/,
-     compiles style.css against dist/theme.css for the classes used here, and inlines the CSS and
-     the fonts. -->
+<!-- The source of the brand kit site. `just build` fills the sc: slots from src/tokens.ts, logos/
+     and social/, compiles style.css against dist/theme.css for the classes used here, inlines the
+     CSS and the fonts, and writes it to _site/ with the downloads. -->
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Studio Cygnus brand specimen</title>
+    <title>Studio Cygnus brand kit</title>
     <!-- sc:style -->
   </head>
   <body class="bg-ground font-sans text-fg antialiased">
@@ -45,14 +45,15 @@
       </header>
 
       <section class="flex flex-col gap-6">
-        <p class="type-label text-xs text-accent-fg">Brand specimen</p>
+        <p class="type-label text-xs text-accent-fg">Brand kit</p>
         <h1 class="type-heading text-6xl sm:text-8xl">
           Small tools, one night sky.
         </h1>
         <p class="max-w-prose text-lg text-fg-muted">
-          Everything on this page is drawn with the theme this package ships:
-          the colours, the three fonts, the type roles, the dot grid and the
-          logo files.
+          The Studio Cygnus brand, drawn with the theme
+          <code class="font-mono text-base">@studiocygnus/brand</code> ships:
+          the colours, the three fonts, the type roles and the dot grid. The
+          logos, the avatar and the banners are below to download.
         </p>
       </section>
 
@@ -167,11 +168,44 @@
       <section id="logos" class="flex flex-col gap-6">
         <h2 class="type-heading text-4xl">Logos</h2>
         <p class="max-w-prose text-fg-muted">
-          The files in <code class="font-mono text-sm">logos/</code>, each on
-          the ground it is made for. Never on a marigold or steel fill.
+          Each on the ground it is made for. The SVGs are the package's
+          <code class="font-mono text-sm">logos/</code>; the PNGs are drawn at
+          four times their size, for documents and slides.
         </p>
         <div class="grid gap-4 sm:grid-cols-2">
           <!-- sc:logos -->
+        </div>
+      </section>
+
+      <section id="avatar" class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Avatar</h2>
+        <p class="max-w-prose text-fg-muted">
+          One square image for every profile picture. Platforms show it as a
+          circle, so the mark sits inside one. It uses the mark's heaviest
+          weight, which still reads at 32 pixels.
+        </p>
+        <!-- sc:avatar -->
+      </section>
+
+      <section id="banners" class="flex flex-col gap-6">
+        <h2 class="type-heading text-4xl">Banners</h2>
+        <p class="max-w-prose text-fg-muted">
+          The wordmark and the Northern Cross among stars, one image per
+          platform. The stars cover the whole image, so whatever a platform
+          crops is still sky. The dashed boxes show what each crop keeps and
+          where the avatar covers it; they are not in the files.
+        </p>
+        <label class="flex min-h-11 items-center gap-3 text-fg-muted">
+          <input
+            type="checkbox"
+            class="size-5 accent-marigold"
+            checked
+            data-toggle-guides
+          />
+          Show the crop guides
+        </label>
+        <div class="flex flex-col gap-10">
+          <!-- sc:banners -->
         </div>
       </section>
 
@@ -186,6 +220,22 @@
 
       <section class="flex flex-col gap-6">
         <h2 class="type-heading text-4xl">Use it</h2>
+        <ul
+          class="flex max-w-prose list-disc flex-col gap-2 pl-5 text-fg-muted"
+        >
+          <li>
+            Each logo goes on the ground its file is named for, night or paper,
+            with room around it. Never on a marigold or steel fill, and never
+            recoloured or stretched.
+          </li>
+          <li>
+            Each product carries "by Studio Cygnus" in its footer, in the
+            product's own body text.
+          </li>
+          <li>
+            In code, the theme and the logo files come from the npm package:
+          </li>
+        </ul>
         <pre
           class="overflow-x-auto border border-rule bg-surface p-5 font-mono text-sm leading-relaxed"
         ><code>@import "tailwindcss";
@@ -210,6 +260,10 @@
           document.documentElement.dataset.theme = button.dataset.setTheme;
         });
       }
+      const guides = document.querySelector("[data-toggle-guides]");
+      guides.addEventListener("change", () => {
+        document.body.dataset.guides = guides.checked ? "on" : "off";
+      });
     </script>
   </body>
 </html>

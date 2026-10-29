@@ -1,0 +1,8 @@
+/* The site's stylesheet: Tailwind with the theme as built in dist/, the file the package ships. */
+@import "tailwindcss";
+@import "../dist/theme.css";
+
+/* The banners' crop guides, hidden by the checkbox above them. */
+[data-guides="off"] [data-guide] {
+  display: none;
+}

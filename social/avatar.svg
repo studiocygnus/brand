@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Studio Cygnus">
+  <title>Studio Cygnus</title>
+  <rect width="1024" height="1024" fill="#0B0E1A"/>
+  <g transform="translate(143.36 150.73)">
+    <g stroke="#E9ECF5" stroke-width="25.8" stroke-linecap="round" opacity="0.6">
+      <line x1="339.15" y1="73.73" x2="368.64" y2="280.17"/>
+      <line x1="368.64" y1="280.17" x2="412.88" y2="663.55"/>
+      <line x1="117.96" y1="221.18" x2="368.64" y2="280.17"/>
+      <line x1="368.64" y1="280.17" x2="619.32" y2="368.64"/>
+    </g>
+    <circle cx="339.15" cy="73.73" r="66.36" fill="#E9ECF5"/>
+    <circle cx="368.64" cy="280.17" r="58.98" fill="#E9ECF5"/>
+    <circle cx="117.96" cy="221.18" r="51.61" fill="#E9ECF5"/>
+    <circle cx="619.32" cy="368.64" r="54.56" fill="#E9ECF5"/>
+    <circle cx="390.76" cy="663.55" r="55.3" fill="#E88E11"/>
+    <circle cx="486.6" cy="634.06" r="36.86" fill="#789AB9"/>
+  </g>
+</svg>

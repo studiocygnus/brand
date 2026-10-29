@@ -10,15 +10,13 @@
   "type": "module",
   "files": [
     "dist",
-    "logos",
-    "specimen.html"
+    "logos"
   ],
   "exports": {
     "./theme.css": "./dist/theme.css",
     "./variables.css": "./dist/variables.css",
     "./fonts.css": "./dist/fonts.css",
     "./logos/*": "./logos/*",
-    "./specimen.html": "./specimen.html",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -39,6 +37,7 @@
     }
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/bun": "latest",
     "oxlint": "^1.90.0",
     "oxlint-tsgolint": "^7.0.2005",
