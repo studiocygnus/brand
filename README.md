@@ -71,6 +71,42 @@ files are linked relative to those packages, so the site's bundler has to copy t
 (`-on-night.svg`) and a paper ground (`-on-paper.svg`). The letters are outlines, so the files need
 no fonts. Put them only on night or paper, never on a marigold or steel fill.
 
+## Icons and the manifest
+
+`@studiocygnus/brand/icons/` has everything a site's `<head>` needs to look right in a browser tab,
+on a phone's home screen and in a link preview:
+
+| File | For |
+| --- | --- |
+| `favicon.ico` (16, 32, 48) and `favicon.svg` | Browser tabs, bookmarks, and anything asking for `/favicon.ico` |
+| `apple-touch-icon.png` (180) | iPhone and iPad home screens |
+| `icon-192.png`, `icon-512.png` | Installed web apps, `purpose: any` |
+| `icon-maskable-192.png`, `icon-maskable-512.png` | Android, which crops icons to its own shape; the mark sits inside the middle 80% |
+| `icon-monochrome.svg`, `icon-monochrome-512.png` | Android themed icons, tinted by the system |
+| `splash/*.png` | The launch screen iOS shows while a home-screen site opens, one per iPhone and iPad size and orientation |
+| `og.png` (1200 × 630) | Link previews |
+| `site.webmanifest` | Installing the site as an app: the name, the colours and the icons |
+| `head.html` | Every tag that wires them up |
+
+To use them, serve the folder at `/icons/` and paste `head.html` into the `<head>`, filling in the
+bracketed title, description and URLs per page. With Astro, copy it into `public/` as part of the
+build, for example in `package.json`:
+
+```json
+"scripts": {
+  "prebuild": "cp -r node_modules/@studiocygnus/brand/dist/icons public/icons"
+}
+```
+
+The manifest's paths are relative to it, so the folder can live elsewhere: at `/brand/icons/` the
+app starts at `/brand/`. It fills in what the brand decides. What describes an app's own pages is the
+app's to add in its own manifest: `screenshots` (Chrome's larger install dialog), `shortcuts`,
+`share_target`, `file_handlers` and `protocol_handlers`. Safari's `mask-icon` and Windows'
+`browserconfig.xml` aren't shipped; current browsers use the favicon instead.
+
+The splash screens follow the device list in `src/icons.json`. Each new iPhone or iPad size needs a
+line there.
+
 ## Brand kit
 
 <https://studiocygnus.github.io/brand/> shows the brand as `main` has it: the palette, both themes,
@@ -85,8 +121,8 @@ social images are not in the package.
 
 The values live in `src/tokens.ts`; `just build` writes the stylesheets to `dist/`. The tests check
 that every text colour meets WCAG AA on its ground in both themes, and that the theme compiles with
-Tailwind. `just logos` redraws the logo SVGs, and the avatar and banners in `social/`, from the fonts;
-the banners' sizes and safe areas are in `src/social.json`.
+Tailwind. `just logos` redraws the logo SVGs, the avatar and banners in `social/` and the icon sources
+in `icons/` from the fonts; the banners' sizes and safe areas are in `src/social.json`.
 
 ## Licence
 

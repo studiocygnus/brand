@@ -17,6 +17,7 @@
     "./variables.css": "./dist/variables.css",
     "./fonts.css": "./dist/fonts.css",
     "./logos/*": "./logos/*",
+    "./icons/*": "./dist/icons/*",
     "./package.json": "./package.json"
   },
   "publishConfig": {

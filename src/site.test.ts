@@ -2,6 +2,7 @@ import { beforeAll, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { renderTheme, renderVariables } from "./css.ts";
+import { pngSize } from "./png.ts";
 import { logoScale, logos, renderSite, viewBoxWidth } from "./site.ts";
 import social from "./social.json" with { type: "json" };
 import { palette } from "./tokens.ts";
@@ -15,13 +16,8 @@ beforeAll(async () => {
     "./variables.css": renderVariables(),
   });
   page = site.get("index.html") as string;
-});
-
-/** Width and height from a PNG's IHDR chunk. */
-const pngSize = (data: Uint8Array): [number, number] => {
-  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-  return [view.getUint32(16), view.getUint32(20)];
-};
+  // Drawing the icons' splash screens takes seconds.
+}, 60_000);
 
 test("the three fonts are inlined, latin and latin-ext only", () => {
   for (const family of [
@@ -37,9 +33,10 @@ test("the three fonts are inlined, latin and latin-ext only", () => {
 });
 
 test("the page fetches nothing from another site", () => {
-  // Anything that would fetch: stylesheets, scripts, and url() or src/href pointing off the site.
+  // Anything that would fetch from elsewhere: stylesheets, scripts, and url() or src/href
+  // pointing off the site. The icons' <link>s point into the site's own icons/.
   const fetches = page.match(
-    /<link\b[^>]*>|<script\s+src[^>]*>|url\((?!data:)[^)]*\)|(?:src|href)="https?:[^"]*"/g,
+    /<link\b[^>]*rel="stylesheet"[^>]*>|<link\b[^>]*href="(?!icons\/)[^"]*"[^>]*>|<script\s+src[^>]*>|url\((?!data:)[^)]*\)|(?:src|href)="(?:https?:)?\/\/[^"]*"/g,
   );
   expect(fetches).toBeNull();
   expect(page).not.toContain("<!-- sc:");
@@ -63,18 +60,18 @@ test("every palette colour and every logo is on the page", () => {
   expect(page.match(/<svg class=/g)?.length).toBe(logos.length);
 });
 
-test("every file the page links or shows is built, and every download is linked", () => {
+test("every file the page links or shows is built, and every file built is linked", () => {
   const used = new Set(
-    [...page.matchAll(/(?:href|src)="(downloads\/[^"]+)"/g)].map(
+    [...page.matchAll(/(?:href|src)="((?:downloads|icons)\/[^"]+)"/g)].map(
       ([, file]) => file,
     ),
   );
   for (const file of used) expect(site.has(file as string)).toBe(true);
-  const downloads = [...site.keys()].filter((file) =>
-    file.startsWith("downloads/"),
+  const files = [...site.keys()].filter((file) => file !== "index.html");
+  expect(files.filter((file) => file.startsWith("downloads/")).length).toBe(
+    2 * (logos.length + 1 + social.banners.length),
   );
-  expect(downloads.length).toBe(2 * (logos.length + 1 + social.banners.length));
-  for (const file of downloads) expect(used.has(file)).toBe(true);
+  for (const file of files) expect(used.has(file)).toBe(true);
 });
 
 test("the social PNGs are the size each platform asks for", () => {

@@ -1,16 +1,22 @@
-// Builds the brand kit site: site/index.html with its slots filled from the tokens, the logos and
-// the social images, compiled against the built theme, with the CSS and fonts inlined; and every
-// logo and social image under downloads/, as SVG and as PNG.
+// Builds the brand kit site: site/index.html with its slots filled from the tokens, the logos,
+// the social images and the icons, compiled against the built theme, with the CSS and fonts
+// inlined; every logo and social image under downloads/, as SVG and as PNG; and dist/icons/ under
+// icons/, which the page itself uses.
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { Resvg } from "@resvg/resvg-js";
+import icons from "./icons.json" with { type: "json" };
+import { renderHead, renderIcons, splashName } from "./icons.ts";
+import { png } from "./png.ts";
 import social from "./social.json" with { type: "json" };
 import { compileCss } from "./tailwind.ts";
 import { fontStylesheets, palette } from "./tokens.ts";
 
 const root = path.resolve(import.meta.dir, "..");
 const source = path.join(root, "site");
+
+/** Where GitHub Pages serves the site. */
+export const siteUrl = "https://studiocygnus.github.io/brand/";
 
 export const logos = [
   "lockup-on-night",
@@ -74,6 +80,78 @@ const avatar = (): string => {
             ${downloadLink("social/avatar.png", "PNG")}
             ${downloadLink("social/avatar.svg", "SVG")}
           </div>`;
+};
+
+const iconLink = (file: string, label: string): string =>
+  `<a class="type-label inline-flex min-h-11 items-center border border-rule px-4 text-xs text-link hover:bg-surface" href="icons/${file}" download>${label}</a>`;
+
+const tab = (ground: string, tabGround: string, text: string): string => `
+            <div class="flex flex-col pt-2 pl-2 ${ground}">
+              <div class="flex h-9 w-56 items-center gap-2 rounded-t-lg px-3 ${tabGround}">
+                <img src="icons/favicon.ico" width="16" height="16" alt="" />
+                <span class="text-xs ${text}">Studio Cygnus</span>
+              </div>
+            </div>`;
+
+const iconsSection = (): string => {
+  const files = [
+    ["favicon.ico", "favicon.ico · 16, 32, 48"],
+    ["favicon.svg", "favicon.svg"],
+    ["apple-touch-icon.png", "apple-touch-icon.png · 180"],
+    ["icon-192.png", "icon-192.png"],
+    ["icon-512.png", "icon-512.png"],
+    ["icon-maskable-192.png", "icon-maskable-192.png"],
+    ["icon-maskable-512.png", "icon-maskable-512.png"],
+    ["icon-monochrome.svg", "icon-monochrome.svg"],
+    ["icon-monochrome-512.png", "icon-monochrome-512.png"],
+    ["og.png", "og.png · 1200 × 630"],
+    ["site.webmanifest", "site.webmanifest"],
+    ["head.html", "head.html"],
+  ];
+  const splashes = icons.devices.flatMap((d) =>
+    [false, true].map((landscape) => {
+      const file = splashName(d, landscape);
+      return `<li>${iconLink(file, `${file.slice("splash/".length, -".png".length)} · ${d.name}, ${landscape ? "landscape" : "portrait"}`)}</li>`;
+    }),
+  );
+  return `
+          <div class="grid gap-4 md:grid-cols-2">
+            ${tab("bg-[#DEE1E6]", "bg-white", "text-[#1F1F1F]")}
+            ${tab("bg-[#202124]", "bg-[#35363A]", "text-[#E8EAED]")}
+          </div>
+          <div class="flex flex-wrap items-end gap-8">
+            <figure class="flex flex-col items-start gap-2">
+              <div class="flex items-end gap-4">
+                <img src="icons/favicon.svg" width="48" height="48" alt="" />
+                <img src="icons/favicon.svg" width="32" height="32" alt="" />
+                <img src="icons/favicon.ico" width="16" height="16" alt="" />
+              </div>
+              <figcaption class="type-label text-xs text-fg-muted">Favicon · 48 · 32 · 16</figcaption>
+            </figure>
+            <figure class="flex flex-col items-start gap-2">
+              <img class="rounded-[22.5%]" src="icons/apple-touch-icon.png" width="90" height="90" alt="" />
+              <figcaption class="type-label text-xs text-fg-muted">iPhone</figcaption>
+            </figure>
+            <figure class="flex flex-col items-start gap-2">
+              <img class="rounded-full" src="icons/icon-maskable-192.png" width="90" height="90" alt="" />
+              <figcaption class="type-label text-xs text-fg-muted">Android</figcaption>
+            </figure>
+            <figure class="flex flex-col items-start gap-2">
+              <div class="flex size-[90px] items-center justify-center rounded-full bg-steel-ink">
+                <img src="icons/icon-monochrome.svg" width="90" height="90" alt="" />
+              </div>
+              <figcaption class="type-label text-xs text-fg-muted">Android, themed</figcaption>
+            </figure>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            ${files.map(([file, label]) => iconLink(file as string, label as string)).join("\n            ")}
+          </div>
+          <details class="flex flex-col gap-3">
+            <summary class="type-label min-h-11 cursor-pointer text-xs text-fg-muted">iOS splash screens · ${splashes.length}</summary>
+            <ul class="flex flex-wrap gap-2 pt-3">
+              ${splashes.join("\n              ")}
+            </ul>
+          </details>`;
 };
 
 /** A box over the banner at `rect`, in percent of its size so it scales with the preview. */
@@ -149,9 +227,6 @@ async function inlineFonts(): Promise<string> {
   return rules.join("\n");
 }
 
-const png = (svg: string, width: number): Uint8Array =>
-  new Resvg(svg, { fitTo: { mode: "width", value: width } }).render().asPng();
-
 /** The width of an SVG's viewBox. */
 export const viewBoxWidth = (svg: string): number =>
   Number(/viewBox="[\d.]+ [\d.]+ ([\d.]+) [\d.]+"/.exec(svg)?.[1]);
@@ -188,19 +263,31 @@ async function downloads(): Promise<Map<string, string | Uint8Array>> {
 /**
  * The finished site, keyed by path. By default the CSS comes from dist/, so build that first;
  * `overrides` serves dist's stylesheets from memory instead, by import path, as the tests do.
+ * `iconFiles` is dist/icons/ as `renderIcons()` makes it, when the caller already has it.
  */
 export async function renderSite(
   overrides: Record<string, string> = {},
+  iconFiles?: Map<string, string | Uint8Array>,
 ): Promise<Map<string, string | Uint8Array>> {
-  const [page, css, pkg, files] = await Promise.all([
+  const [page, css, pkg, files, iconMap] = await Promise.all([
     readFile(path.join(source, "index.html"), "utf8"),
     readFile(path.join(source, "style.css"), "utf8"),
     Bun.file(path.join(root, "package.json")).json() as Promise<{
       version: string;
     }>,
     downloads(),
+    iconFiles ?? renderIcons(),
   ]);
+  const head = renderHead("icons/", {
+    title: "Studio Cygnus brand kit",
+    description:
+      "The Studio Cygnus brand: colours, type, logos, the avatar, banners and icons.",
+    url: siteUrl,
+    iconsUrl: `${siteUrl}icons/`,
+  });
   const html = page
+    .replace("<!-- sc:head -->", head)
+    .replace("<!-- sc:icons -->", iconsSection())
     .replace("<!-- sc:version -->", pkg.version)
     .replace(
       "<!-- sc:palette -->",
@@ -229,5 +316,6 @@ export async function renderSite(
     ],
   ]);
   for (const [file, contents] of files) site.set(`downloads/${file}`, contents);
+  for (const [file, contents] of iconMap) site.set(`icons/${file}`, contents);
   return site;
 }
