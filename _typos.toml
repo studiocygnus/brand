@@ -1,3 +1,5 @@
 [default.extend-words]
 # The OpenType width axis tag, as in font-variation-settings: 'wdth' 75.
 wdth = "wdth"
+# "PNGs", read as the word PN plus an s.
+PN = "PN"
