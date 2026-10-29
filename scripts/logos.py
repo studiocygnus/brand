@@ -2,8 +2,8 @@
 # requires-python = ">=3.12"
 # dependencies = ["fonttools[woff]==4.68.0", "uharfbuzz==0.57.0"]
 # ///
-"""Draw the logo SVGs in logos/, the social images in social/ and the icon sources in icons/,
-with the text as outlines so they need no fonts.
+"""Draw the logo SVGs in logos/, the social images in social/, the icon sources in icons/ and
+the email signature's band in email/, with the text as outlines so they need no fonts.
 
 `just logos` runs it. It reproduces the final identity board's layout: the mark's geometry, and
 the wordmark and lockup as the browser set them, using the fonts from node_modules. The social
@@ -28,6 +28,7 @@ FONTS = ROOT / "node_modules/@fontsource-variable"
 OUT = ROOT / "logos"
 SOCIAL = ROOT / "social"
 ICONS = ROOT / "icons"
+EMAIL = ROOT / "email"
 
 NIGHT = "#0B0E1A"
 STARLIGHT = "#E9ECF5"
@@ -198,9 +199,22 @@ def main():
     for ground, (star, companion, _) in GROUNDS.items():
         write(f"mark-on-{ground}.svg", 96, 96, (-PAD, -PAD), mark(100, star, companion, "medium"))
 
-    # Lockup: the 88px mark at its small weight, a 20px gap, then a column centred on the mark:
-    # "STUDIO" in Martian Mono (12px, 0.32em spacing, normal line height), a 6px gap, and
-    # `cygnus` at 54px with line-height 0.9.
+    for ground, colours in GROUNDS.items():
+        body, width, top, bottom = lockup(mono, bricolage, *colours)
+        write(f"lockup-on-{ground}.svg", width, bottom - top, (0, -top), body)
+
+    social(bricolage)
+    icons()
+    email(mono, bricolage)
+
+
+def lockup(mono, bricolage, star, companion, label):
+    """The lockup with its mark's top-left at the origin.
+
+    The 88px mark at its small weight, a 20px gap, then a column centred on the mark: "STUDIO" in
+    Martian Mono (12px, 0.32em spacing, normal line height), a 6px gap, and `cygnus` at 54px with
+    line-height 0.9. Returns the body, its width, and the top and bottom of its ink.
+    """
     studio, _, (_, sy0, sx1, _) = mono.outline("STUDIO", 12, 0.32)
     name, _, (_, _, nx1, ny1) = bricolage.outline("cygnus", 54, -0.045)
     studio_line = (mono.ascent + mono.descent) * 12
@@ -208,17 +222,12 @@ def main():
     studio_y = column_top + mono.baseline(12, mono.ascent + mono.descent)
     name_y = column_top + studio_line + 6 + bricolage.baseline(54, 0.9)
     text_x = 88 + 20
-    top = min(0, studio_y + sy0)
-    bottom = max(88, name_y + ny1)
-    for ground, (star, companion, label) in GROUNDS.items():
-        write(f"lockup-on-{ground}.svg", text_x + max(sx1, nx1), bottom - top, (0, -top), [
-            *mark(88, star, companion, "small"),
-            f'<path fill="{label}" transform="translate({num(text_x)} {num(studio_y)})" d="{studio}"/>',
-            f'<path fill="{star}" transform="translate({num(text_x)} {num(name_y)})" d="{name}"/>',
-        ])
-
-    social(bricolage)
-    icons()
+    body = [
+        *mark(88, star, companion, "small"),
+        f'<path fill="{label}" transform="translate({num(text_x)} {num(studio_y)})" d="{studio}"/>',
+        f'<path fill="{star}" transform="translate({num(text_x)} {num(name_y)})" d="{name}"/>',
+    ]
+    return body, text_x + max(sx1, nx1), min(0, studio_y + sy0), max(88, name_y + ny1)
 
 
 def centred_mark(square, scale, star, companion, weight, bright=MARIGOLD):
@@ -305,6 +314,40 @@ def icons():
     write_social("monochrome.svg", sq, sq, centred_mark(sq, 0.72, "#FFFFFF", "#FFFFFF", "avatar", "#FFFFFF"), ICONS)
     # Splash screens: the mark alone, at its lighter weight, placed on night by src/icons.ts.
     write_social("splash-mark.svg", 100, 100, mark(100, star, companion, "medium"), ICONS)
+
+
+def email(mono, bricolage):
+    """The signature's band: a night plate with the lockup and the address among stars.
+
+    Drawn at twice its 440x60 size in the email, as on the canvas: 12px of padding top and bottom,
+    14px left and 18px right, the lockup's mark 36px tall, the address in Martian Mono at 9px with
+    0.1em spacing.
+    """
+    EMAIL.mkdir(exist_ok=True)
+    w, h, k = 880, 120, 2
+    star, companion, label = GROUNDS["night"]
+    body, width, top, bottom = lockup(mono, bricolage, star, companion, label)
+    s = 36 * k / 88
+    lx, ly = 14 * k, (h - (bottom - top) * s) / 2 - top * s
+    site, advance, (_, ay0, _, ay1) = mono.outline("STUDIOCYGNUS.CO", 9 * k, 0.1)
+    ax = w - 18 * k - (advance - 0.1 * 9 * k)
+    ay = h / 2 - (ay0 + ay1) / 2
+    m = 12 * k
+    clear = [
+        (lx - m, ly + top * s - m, lx + width * s + m, ly + bottom * s + m),
+        (ax - m, ay + ay0 - m, w, ay + ay1 + m),
+    ]
+    write_social("band.svg", w, h, [
+        f'<clipPath id="plate"><rect width="{w}" height="{h}" rx="{10 * k}"/></clipPath>',
+        f'<rect width="{w}" height="{h}" rx="{10 * k}" fill="{NIGHT}"/>',
+        '<g clip-path="url(#plate)">',
+        *(f"  {line}" for line in starfield(random.Random("email"), w, h, clear)),
+        "</g>",
+        f'<g transform="translate({num(lx)} {num(ly)}) scale({num(s)})">',
+        *(f"  {line}" for line in body),
+        "</g>",
+        f'<path fill="{MARIGOLD}" transform="translate({num(ax)} {num(ay)})" d="{site}"/>',
+    ], EMAIL)
 
 
 if __name__ == "__main__":

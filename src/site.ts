@@ -5,6 +5,7 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { renderEmail } from "./email.ts";
 import icons from "./icons.json" with { type: "json" };
 import { renderHead, renderIcons, splashName } from "./icons.ts";
 import { png } from "./png.ts";
@@ -269,7 +270,7 @@ export async function renderSite(
   overrides: Record<string, string> = {},
   iconFiles?: Map<string, string | Uint8Array>,
 ): Promise<Map<string, string | Uint8Array>> {
-  const [page, css, pkg, files, iconMap] = await Promise.all([
+  const [page, css, pkg, files, iconMap, email] = await Promise.all([
     readFile(path.join(source, "index.html"), "utf8"),
     readFile(path.join(source, "style.css"), "utf8"),
     Bun.file(path.join(root, "package.json")).json() as Promise<{
@@ -277,6 +278,7 @@ export async function renderSite(
     }>,
     downloads(),
     iconFiles ?? renderIcons(),
+    renderEmail(siteUrl),
   ]);
   const head = renderHead("icons/", {
     title: "Studio Cygnus brand kit",
@@ -317,5 +319,7 @@ export async function renderSite(
   ]);
   for (const [file, contents] of files) site.set(`downloads/${file}`, contents);
   for (const [file, contents] of iconMap) site.set(`icons/${file}`, contents);
+  // The signature's files, at the fixed addresses sent mail loads them from.
+  for (const [file, contents] of email) site.set(`email/${file}`, contents);
   return site;
 }
