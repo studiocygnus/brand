@@ -1,4 +1,5 @@
 import { beforeAll, expect, test } from "bun:test";
+import company from "./company.json" with { type: "json" };
 import { band, renderEmail } from "./email.ts";
 import { pngSize } from "./png.ts";
 import { siteUrl } from "./site.ts";
@@ -19,6 +20,10 @@ test("the band is drawn at twice its size in mail", () => {
 
 test("the signature is what mail clients keep: inline styles, no stylesheet or script", () => {
   expect(html).not.toMatch(/<style|class=|<script|<link/);
+});
+
+test("the notice and legal name come from the company facts", () => {
+  expect(html).toContain(`${company.notice.en} ${company.legalName}`);
 });
 
 test("only name, title and email are left to fill in", () => {
