@@ -3,3 +3,5 @@
 wdth = "wdth"
 # "PNGs", read as the word PN plus an s.
 PN = "PN"
+# Spanish, in the confidentiality notice in src/company.json: "no lo copie".
+copie = "copie"

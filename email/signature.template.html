@@ -1,5 +1,5 @@
-<!-- The email signature. `just build` puts the band's address in for {band} and writes it to
-     _site/email/signature.html. {name}, {title} and {email} are filled in per person. Mail clients
+<!-- The email signature. `just build` puts in the band's address, and the notice and legal name from
+     src/company.json, and writes it to _site/email/signature.html. {name}, {title} and {email} are filled in per person. Mail clients
      keep only tables and inline styles, and no web fonts, so the text is Arial and the logo is an
      image that brings its own night ground for dark mode. -->
 <table
@@ -71,9 +71,7 @@
         color: #4f5870;
       "
     >
-      This email and any attachments are confidential and meant only for the
-      people it is addressed to. If it reached you by mistake, please tell the
-      sender and delete it; do not copy, forward or use it. Studio Cygnus S.R.L.
+      {notice} {legalName}
     </td>
   </tr>
 </table>

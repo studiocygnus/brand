@@ -107,6 +107,29 @@ app's to add in its own manifest: `screenshots` (Chrome's larger install dialog)
 The splash screens follow the device list in `src/icons.json`. Each new iPhone or iPad size needs a
 line there.
 
+## Company facts
+
+`@studiocygnus/brand/company.json` has what the studio says about itself in public: the name, the
+legal name, the founding year, the website, the public email addresses, and the words a page uses
+for the studio, in each of its `languages` (English first):
+
+| Key | For |
+| --- | --- |
+| `descriptor` | What the studio is, next to the name: "Software studio" |
+| `tagline` | One line under the name |
+| `about` | One sentence on what the studio does |
+| `credit` | The footer line on a tool's own pages: "By Studio Cygnus" |
+| `notice` | The confidentiality line in the email signature, followed by `legalName` |
+
+```ts
+import company from "@studiocygnus/brand/company.json" with { type: "json" };
+
+const footer = `© ${new Date().getFullYear()} ${company.name}`;
+```
+
+The copyright line isn't stored; a page builds it from the current year, as above. Registration
+details and the address are not in the package, and a test keeps them out.
+
 ## Brand kit
 
 <https://studiocygnus.github.io/brand/> shows the brand as `main` has it: the palette, both themes,

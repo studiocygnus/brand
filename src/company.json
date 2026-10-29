@@ -1,0 +1,37 @@
+{
+  "name": "Studio Cygnus",
+  "legalName": "Studio Cygnus S.R.L.",
+  "founded": 2024,
+  "website": "https://studiocygnus.co",
+  "email": {
+    "hello": "hello@studiocygnus.co",
+    "support": "support@studiocygnus.co",
+    "privacy": "privacy@studiocygnus.co"
+  },
+  "languages": ["en", "es", "ro"],
+  "descriptor": {
+    "en": "Software studio",
+    "es": "Estudio de software",
+    "ro": "Studio de software"
+  },
+  "tagline": {
+    "en": "Software made for one trade at a time.",
+    "es": "Software hecho para un sector a la vez.",
+    "ro": "Software creat pentru câte un domeniu, pe rând."
+  },
+  "about": {
+    "en": "Studio Cygnus builds and runs software tools, each made for one trade.",
+    "es": "Studio Cygnus crea y mantiene herramientas de software, cada una hecha para un solo sector.",
+    "ro": "Studio Cygnus creează și întreține instrumente software, fiecare gândit pentru un singur domeniu."
+  },
+  "credit": {
+    "en": "By Studio Cygnus",
+    "es": "Por Studio Cygnus",
+    "ro": "De Studio Cygnus"
+  },
+  "notice": {
+    "en": "This email and any attachments are confidential and meant only for the people it is addressed to. If it reached you by mistake, please tell the sender and delete it; do not copy, forward or use it.",
+    "es": "Este correo y sus adjuntos son confidenciales y van dirigidos solo a sus destinatarios. Si lo ha recibido por error, avise al remitente y bórrelo; no lo copie, reenvíe ni utilice.",
+    "ro": "Acest e-mail și eventualele atașamente sunt confidențiale și sunt destinate doar destinatarilor. Dacă l-ați primit din greșeală, vă rugăm să anunțați expeditorul și să îl ștergeți; nu îl copiați, nu îl redirecționați și nu îl folosiți."
+  }
+}
