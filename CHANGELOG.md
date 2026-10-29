@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/studiocygnus/brand/compare/v2.0.0...v2.1.0) (2026-10-29)
+
+
+### Features
+
+* ship favicons, app icons, iOS splash screens and a web manifest ([#9](https://github.com/studiocygnus/brand/issues/9)) ([99d208b](https://github.com/studiocygnus/brand/commit/99d208b9f3d0c2abd35d64adb1ca6e4c9ec558cf))
+
 ## [2.0.0](https://github.com/studiocygnus/brand/compare/v1.1.0...v2.0.0) (2026-10-29)
 
 
