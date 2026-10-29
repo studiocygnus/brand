@@ -67,7 +67,10 @@ test("every file the page links or shows is built, and every file built is linke
     ),
   );
   for (const file of used) expect(site.has(file as string)).toBe(true);
-  const files = [...site.keys()].filter((file) => file !== "index.html");
+  // email/ is for mail, not the page.
+  const files = [...site.keys()].filter(
+    (file) => file !== "index.html" && !file.startsWith("email/"),
+  );
   expect(files.filter((file) => file.startsWith("downloads/")).length).toBe(
     2 * (logos.length + 1 + social.banners.length),
   );
