@@ -2,12 +2,13 @@
 # requires-python = ">=3.12"
 # dependencies = ["fonttools[woff]==4.68.0", "uharfbuzz==0.57.0"]
 # ///
-"""Draw the logo SVGs in logos/ and the social images in social/, with the text as outlines so
-they need no fonts.
+"""Draw the logo SVGs in logos/, the social images in social/ and the icon sources in icons/,
+with the text as outlines so they need no fonts.
 
 `just logos` runs it. It reproduces the final identity board's layout: the mark's geometry, and
 the wordmark and lockup as the browser set them, using the fonts from node_modules. The social
-images follow the social board on the identity canvas, at the sizes in src/social.json.
+images follow the social board on the identity canvas, at the sizes in src/social.json. The icons
+are the avatar's mark; src/icons.ts turns them into the favicon, app icons and splash screens.
 """
 
 import io
@@ -26,6 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FONTS = ROOT / "node_modules/@fontsource-variable"
 OUT = ROOT / "logos"
 SOCIAL = ROOT / "social"
+ICONS = ROOT / "icons"
 
 NIGHT = "#0B0E1A"
 STARLIGHT = "#E9ECF5"
@@ -46,6 +48,9 @@ MARK_WEIGHTS = {
     "medium": ((6, 5, 4, 4.4), 1.6, 0.55, ((53, 90, 4.4), (61.5, 87.5, 3))),
     "small": ((7, 6, 5, 5.4), 2.0, 0.55, ((53, 90, 5.2), (63, 87, 3.6))),
     "avatar": ((9, 8, 7, 7.4), 3.5, 0.6, ((53, 90, 7.5), (66, 86, 5))),
+    # At 16px a unit is about a seventh of a pixel: brighter lines, and Albireo's pair larger and
+    # a pixel apart so gold and blue stay two dots.
+    "favicon-16": ((10, 9, 8, 8.4), 5, 0.75, ((52, 90, 10), (76, 84, 7))),
 }
 LINES = [(46, 10, 50, 38), (50, 38, 56, 90), (16, 30, 50, 38), (50, 38, 84, 50)]
 STARS = [(46, 10), (50, 38), (16, 30), (84, 50)]
@@ -105,7 +110,7 @@ class Face:
         return pen.getCommands(), x, bounds.bounds
 
 
-def mark(size, star, companion, weight):
+def mark(size, star, companion, weight, bright=MARIGOLD):
     """The Northern Cross drawn `size` px square at the origin."""
     s = size / 100
     radii, stroke, opacity, ((ax, ay, ar), (bx, by, br)) = MARK_WEIGHTS[weight]
@@ -116,7 +121,7 @@ def mark(size, star, companion, weight):
     ]
     out.append("</g>")
     out += [f'<circle cx="{num(x * s)}" cy="{num(y * s)}" r="{num(r * s)}" fill="{star}"/>' for (x, y), r in zip(STARS, radii)]
-    out.append(f'<circle cx="{num(ax * s)}" cy="{num(ay * s)}" r="{num(ar * s)}" fill="{MARIGOLD}"/>')
+    out.append(f'<circle cx="{num(ax * s)}" cy="{num(ay * s)}" r="{num(ar * s)}" fill="{bright}"/>')
     out.append(f'<circle cx="{num(bx * s)}" cy="{num(by * s)}" r="{num(br * s)}" fill="{companion}"/>')
     return out
 
@@ -213,12 +218,24 @@ def main():
         ])
 
     social(bricolage)
+    icons()
 
 
-def write_social(name, width, height, body):
-    """One social image, `width` by `height` px with nothing outside it."""
+def centred_mark(square, scale, star, companion, weight, bright=MARIGOLD):
+    """The mark at `scale` of a `square` px square, the point (50, 49) of its drawing on the
+    centre, which puts it in the middle of a circle crop."""
+    size = scale * square
+    return [
+        f'<g transform="translate({num(square / 2 - 0.5 * size)} {num(square / 2 - 0.49 * size)})">',
+        *(f"  {line}" for line in mark(size, star, companion, weight, bright)),
+        "</g>",
+    ]
+
+
+def write_social(name, width, height, body, folder=SOCIAL):
+    """One image, `width` by `height` px with nothing outside it."""
     lines = "\n".join(f"  {line}" for line in body)
-    (SOCIAL / name).write_text(
+    (folder / name).write_text(
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Studio Cygnus">\n'
         f"  <title>Studio Cygnus</title>\n{lines}\n</svg>\n"
     )
@@ -230,15 +247,12 @@ def social(bricolage):
     SOCIAL.mkdir(exist_ok=True)
     star, companion, _ = GROUNDS["night"]
 
-    # Avatar: the mark at its avatar weight, 72% of the square, the point (50, 49) of its drawing
-    # on the centre so it sits in the middle of the circle every platform crops it to.
+    # Avatar: the mark at its avatar weight, 72% of the square, in the middle of the circle every
+    # platform crops it to.
     w, h = spec["avatar"]["width"], spec["avatar"]["height"]
-    size = 0.72 * w
     write_social("avatar.svg", w, h, [
         f'<rect width="{w}" height="{h}" fill="{NIGHT}"/>',
-        f'<g transform="translate({num(w / 2 - 0.5 * size)} {num(h / 2 - 0.49 * size)})">',
-        *(f"  {line}" for line in mark(size, star, companion, "avatar")),
-        "</g>",
+        *centred_mark(w, 0.72, star, companion, "avatar"),
     ])
 
     # Banners: the wordmark and the Northern Cross side by side, centred in the platform's safe
@@ -270,6 +284,27 @@ def social(bricolage):
             *(f"  {line}" for line in mark(cross, star, companion, "medium")),
             "</g>",
         ])
+
+
+def icons():
+    """The sources of the favicon, the app icons and the splash screens, all 512 px square."""
+    ICONS.mkdir(exist_ok=True)
+    star, companion, _ = GROUNDS["night"]
+    sq = 512
+    ground = f'<rect width="{sq}" height="{sq}" fill="{NIGHT}"/>'
+    # Tabs show the square, so it gets rounded corners and the mark fills more of it.
+    rounded = f'<rect width="{sq}" height="{sq}" rx="{num(0.18 * sq)}" fill="{NIGHT}"/>'
+    write_social("favicon.svg", sq, sq, [rounded, *centred_mark(sq, 0.84, star, companion, "avatar")], ICONS)
+    write_social("favicon-16.svg", sq, sq, [rounded, *centred_mark(sq, 0.92, star, companion, "favicon-16")], ICONS)
+    # iOS rounds the touch icon itself and turns transparency black, so it's a full square.
+    write_social("apple-touch-icon.svg", sq, sq, [ground, *centred_mark(sq, 0.72, star, companion, "avatar")], ICONS)
+    # Maskable: full bleed, the mark inside the middle 80% circle that every launcher mask keeps.
+    # It's the avatar's layout.
+    write_social("maskable.svg", sq, sq, [ground, *centred_mark(sq, 0.72, star, companion, "avatar")], ICONS)
+    # Monochrome: one colour on transparent; the system tints it and reads only its alpha.
+    write_social("monochrome.svg", sq, sq, centred_mark(sq, 0.72, "#FFFFFF", "#FFFFFF", "avatar", "#FFFFFF"), ICONS)
+    # Splash screens: the mark alone, at its lighter weight, placed on night by src/icons.ts.
+    write_social("splash-mark.svg", 100, 100, mark(100, star, companion, "medium"), ICONS)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,8 @@
 {
-  "avatar": { "width": 1024, "height": 1024 },
+  "avatar": {
+    "width": 1024,
+    "height": 1024
+  },
   "banners": [
     {
       "name": "youtube",
@@ -8,8 +11,14 @@
       "height": 1440,
       "safe": [507, 508, 1546, 423],
       "guides": [
-        { "label": "Desktop", "rect": [0, 508, 2560, 423] },
-        { "label": "Every device", "rect": [507, 508, 1546, 423] }
+        {
+          "label": "Desktop",
+          "rect": [0, 508, 2560, 423]
+        },
+        {
+          "label": "Every device",
+          "rect": [507, 508, 1546, 423]
+        }
       ]
     },
     {
@@ -19,9 +28,15 @@
       "height": 382,
       "safe": [352, 32, 1840, 318],
       "guides": [
-        { "label": "Clear of the logo", "rect": [352, 32, 1840, 318] }
+        {
+          "label": "Clear of the logo",
+          "rect": [352, 32, 1840, 318]
+        }
       ],
-      "avatar": { "rect": [48, 222, 256, 256], "shape": "square" }
+      "avatar": {
+        "rect": [48, 222, 256, 256],
+        "shape": "square"
+      }
     },
     {
       "name": "facebook",
@@ -29,8 +44,16 @@
       "width": 1640,
       "height": 624,
       "safe": [265, 48, 1110, 400],
-      "guides": [{ "label": "Phones", "rect": [265, 0, 1110, 624] }],
-      "avatar": { "rect": [48, 424, 336, 336], "shape": "circle" }
+      "guides": [
+        {
+          "label": "Phones",
+          "rect": [265, 0, 1110, 624]
+        }
+      ],
+      "avatar": {
+        "rect": [48, 424, 336, 336],
+        "shape": "circle"
+      }
     },
     {
       "name": "x",
@@ -39,10 +62,19 @@
       "height": 500,
       "safe": [400, 70, 1060, 360],
       "guides": [
-        { "label": "Every device", "rect": [0, 60, 1500, 380] },
-        { "label": "Clear of the avatar", "rect": [400, 70, 1060, 360] }
+        {
+          "label": "Every device",
+          "rect": [0, 60, 1500, 380]
+        },
+        {
+          "label": "Clear of the avatar",
+          "rect": [400, 70, 1060, 360]
+        }
       ],
-      "avatar": { "rect": [40, 332, 335, 335], "shape": "circle" }
+      "avatar": {
+        "rect": [40, 332, 335, 335],
+        "shape": "circle"
+      }
     },
     {
       "name": "github",
@@ -50,7 +82,25 @@
       "width": 1280,
       "height": 640,
       "safe": [40, 40, 1200, 560],
-      "guides": [{ "label": "Safe", "rect": [40, 40, 1200, 560] }]
+      "guides": [
+        {
+          "label": "Safe",
+          "rect": [40, 40, 1200, 560]
+        }
+      ]
+    },
+    {
+      "name": "og",
+      "label": "Link preview (Open Graph)",
+      "width": 1200,
+      "height": 630,
+      "safe": [80, 80, 1040, 470],
+      "guides": [
+        {
+          "label": "Safe",
+          "rect": [80, 80, 1040, 470]
+        }
+      ]
     }
   ]
 }
