@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/studiocygnus/brand/compare/v2.1.0...v2.2.0) (2026-10-29)
+
+
+### Features
+
+* generate the email signature ([#11](https://github.com/studiocygnus/brand/issues/11)) ([e91c86a](https://github.com/studiocygnus/brand/commit/e91c86a5e66207c58f3fda072c59490b41c39355))
+
 ## [2.1.0](https://github.com/studiocygnus/brand/compare/v2.0.0...v2.1.0) (2026-10-29)
 
 
